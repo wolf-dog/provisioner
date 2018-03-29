@@ -1,0 +1,29 @@
+---
+- name: check whether fzf is installed
+  command: "which /home/{{ user.name }}/bin/fzf"
+  register: installed
+  check_mode: no
+  failed_when: no
+  changed_when: installed.rc != 0
+
+- block:
+  - name: clone repo
+    git:
+      repo: https://github.com/junegunn/fzf.git
+      dest: "/home/{{ user.name }}/.fzf"
+      depth: 1
+
+  - name: install
+    command: /usr/local/bin/fish -c './install --all'
+    args:
+      chdir: "/home/{{ user.name }}/.fzf"
+  when: installed|changed
+
+- name: create a symlink
+  file:
+    src: "/home/{{ user.name }}/.fzf/bin/fzf"
+    path: "/home/{{ user.name }}/bin/fzf"
+    owner: "{{ user.name }}"
+    group: "{{ user.group }}"
+    mode: 0755
+    state: link

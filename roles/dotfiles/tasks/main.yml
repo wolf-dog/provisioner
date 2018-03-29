@@ -1,0 +1,44 @@
+---
+- name: clone repo
+  git:
+    repo: https://github.com/wolf-dog/dotfiles
+    dest: "/home/{{ user.name }}/dotfiles"
+    depth: 1
+
+- name: link settings
+  file:
+    src: "/home/{{ user.name }}/dotfiles/{{ item }}"
+    path: "/home/{{ user.name }}/{{ item }}"
+    owner: "{{ user.name }}"
+    group: "{{ user.group }}"
+    mode: 0644
+    state: link
+    force: yes
+  with_items:
+    - .bashrc
+    - .ctags
+    - .gitconfig
+    - .gitignore
+    - .tmux.conf
+    - .vim
+    - .vimrc
+
+- name: link config.fish
+  file:
+    src: "/home/{{ user.name }}/dotfiles/.config/fish/config.fish"
+    path: "/home/{{ user.name }}/.config/fish/config.fish"
+    owner: "{{ user.name }}"
+    group: "{{ user.group }}"
+    mode: 0644
+    state: link
+    force: yes
+
+- name: link config.fish
+  file:
+    src: "/home/{{ user.name }}/dotfiles/.config/fish/functions/fish_user_key_bindings.fish"
+    path: "/home/{{ user.name }}/.config/fish/functions/fish_user_key_bindings.fish"
+    owner: "{{ user.name }}"
+    group: "{{ user.group }}"
+    mode: 0644
+    state: link
+    force: yes

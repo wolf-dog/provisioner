@@ -1,0 +1,32 @@
+---
+- name: check whether luajit is installed
+  command: "ls /usr/local/lib/libluajit-{{ lua.version }}.so"
+  register: installed
+  check_mode: no
+  failed_when: no
+  changed_when: installed.rc != 0
+
+- block:
+  - name: get and unarchive luajit source codes
+    unarchive:
+      src: "http://luajit.org/download/LuaJIT-{{ luajit.version }}.tar.gz"
+      dest: "/home/{{ user.name }}/devel/"
+      remote_src: yes
+
+  - name: make
+    command: make
+    args:
+      chdir: "/home/{{ user.name }}/devel/LuaJIT-{{ luajit.version }}"
+
+  - name: make install
+    command: make install
+    become: yes
+    args:
+      chdir: "/home/{{ user.name }}/devel/LuaJIT-{{ luajit.version }}"
+  when: installed|changed
+
+- name: set LD_LIBRARY_PATH
+  lineinfile:
+    path: "/home/{{ user.name }}/.config/fish/config_local.fish"
+    line: 'set -x LD_LIBRARY_PATH "/usr/local/lib:$LD_LIBRARY_PATH"'
+    create: yes

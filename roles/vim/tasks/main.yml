@@ -1,0 +1,35 @@
+---
+- name: check whether vim is installed
+  command: "which /usr/local/bin/vim"
+  register: installed
+  check_mode: no
+  failed_when: no
+  changed_when: installed.rc != 0
+
+- name: install packages for ubuntu
+  import_tasks: ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- block:
+  - name: clone repo
+    git:
+      repo: https://github.com/vim/vim
+      dest: "/home/{{ user.name }}/devel/vim"
+      depth: 1
+
+  - name: configure
+    command: ./configure --enable-fail-if-missing --with-features=huge --disable-darwin --disable-selinux --disable-netbeans --enable-luainterp=yes --with-luajit=true --with-lua-prefix=/usr/local --enable-python3interp=yes --enable-multibyte
+    args:
+      chdir: "/home/{{ user.name }}/devel/vim/src"
+
+  - name: make
+    command: make
+    args:
+      chdir: "/home/{{ user.name }}/devel/vim/src"
+
+  - name: make install
+    become: yes
+    command: make install
+    args:
+      chdir: "/home/{{ user.name }}/devel/vim/src"
+  when: installed|changed

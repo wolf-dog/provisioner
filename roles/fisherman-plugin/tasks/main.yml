@@ -1,0 +1,15 @@
+---
+- name: list installed plugins
+  command: /usr/local/bin/fish -c 'fisher ls -1'
+  register: installed_plugins
+  check_mode: no
+  failed_when: no
+  changed_when: no
+
+- name: install plugins
+  command: "/usr/local/bin/fish -c 'fisher {{ item.repo }}'"
+  when: item.name not in installed_plugins.stdout
+  with_items:
+    - { name: fzf, repo: fisherman/fzf }
+    - { name: styriga, repo: wolf-dog/styriga }
+    - { name: z, repo: fisherman/z }

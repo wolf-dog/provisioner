@@ -1,0 +1,33 @@
+---
+- name: check whether hw is installed
+  command: "which /home/{{ user.name }}/bin/hw"
+  register: installed
+  check_mode: no
+  failed_when: no
+  changed_when: installed.rc != 0
+
+- name: install packages for ubuntu
+  import_tasks: ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- block:
+  - name: clone repo
+    git:
+      repo: https://github.com/tkengo/highway.git
+      dest: "/home/{{ user.name }}/devel/highway"
+      depth: 1
+
+  - name: build
+    command: ./tools/build.sh
+    args:
+      chdir: "/home/{{ user.name }}/devel/highway"
+  when: installed|changed
+
+- name: create a symlink
+  file:
+    src: "/home/{{ user.name }}/devel/highway/hw"
+    path: "/home/{{ user.name }}/bin/hw"
+    owner: "{{ user.name }}"
+    group: "{{ user.group }}"
+    mode: 0755
+    state: link

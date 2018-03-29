@@ -1,0 +1,59 @@
+---
+- name: check whether fish is installed
+  command: "which /usr/local/bin/fish"
+  register: installed
+  check_mode: no
+  failed_when: no
+  changed_when: installed.rc != 0
+
+- name: install packages for ubuntu
+  import_tasks: ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- block:
+  - name: clone repo
+    git:
+      repo: https://github.com/fish-shell/fish-shell
+      dest: "/home/{{ user.name }}/devel/fish"
+      depth: 1
+
+  - name: autoreconf
+    command: autoreconf --no-recursive
+    args:
+      chdir: "/home/{{ user.name }}/devel/fish"
+
+  - name: configure
+    command: "./configure --prefix=/usr/local"
+    args:
+      chdir: "/home/{{ user.name }}/devel/fish"
+
+  - name: make
+    command: make
+    args:
+      chdir: "/home/{{ user.name }}/devel/fish"
+
+  - name: make install
+    become: yes
+    command: make install
+    args:
+      chdir: "/home/{{ user.name }}/devel/fish"
+  when: installed|changed
+
+- name: register to shells
+  become: yes
+  lineinfile:
+    path: /etc/shells
+    line: "/usr/local/bin/fish"
+
+- name: check whether fish is set to default shell
+  become: yes
+  command: "grep 'vagrant:.*:/usr/local/bin/fish' /etc/passwd"
+  register: set_to_default
+  check_mode: no
+  failed_when: no
+  changed_when: set_to_default.rc != 0
+
+- name: set default shell
+  become: yes
+  command: "chsh -s /usr/local/bin/fish {{ user.name }}"
+  when: set_to_default|changed

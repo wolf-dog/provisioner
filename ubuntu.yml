@@ -1,0 +1,15 @@
+---
+- name: ubuntu
+  hosts:
+    ubuntu
+  roles:
+    - init
+    - hw
+    - gtags
+    - fish
+    - fisherman
+    - fisherman-plugin
+    - fzf
+    - luajit
+    - vim
+    - dotfiles

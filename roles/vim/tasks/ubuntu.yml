@@ -1,0 +1,8 @@
+---
+- name: install packages
+  become: yes
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - python3-dev
+    - libncurses5-dev

@@ -1,0 +1,23 @@
+---
+- name: check whether fisherman is installed
+  command: "ls /home/{{ user.name }}/.config/fish/functions/fisher.fish"
+  register: installed
+  check_mode: no
+  failed_when: no
+  changed_when: installed.rc != 0
+
+- block:
+  - name: make fisherman dir
+    file:
+      path: "/home/{{ user.name }}/.config/fish/functions"
+      owner: "{{ user.name }}"
+      group: "{{ user.group }}"
+      mode: 0755
+      state: directory
+
+  - name: install fisherman
+    get_url:
+      url: https://git.io/fisher
+      dest: "/home/{{ user.name }}/.config/fish/functions/fisher.fish"
+      remote_src: yes
+  when: installed|changed
