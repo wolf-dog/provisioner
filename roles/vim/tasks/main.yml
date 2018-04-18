@@ -32,4 +32,4 @@
     command: make install
     args:
       chdir: "/home/{{ user.name }}/devel/vim/src"
-  when: installed|changed
+  when: installed is changed

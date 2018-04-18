@@ -20,4 +20,4 @@
       url: https://git.io/fisher
       dest: "/home/{{ user.name }}/.config/fish/functions/fisher.fish"
       remote_src: yes
-  when: installed|changed
+  when: installed is changed

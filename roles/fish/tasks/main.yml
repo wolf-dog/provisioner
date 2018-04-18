@@ -37,7 +37,7 @@
     command: make install
     args:
       chdir: "/home/{{ user.name }}/devel/fish"
-  when: installed|changed
+  when: installed is changed
 
 - name: register to shells
   become: yes
@@ -56,4 +56,4 @@
 - name: set default shell
   become: yes
   command: "chsh -s /usr/local/bin/fish {{ user.name }}"
-  when: set_to_default|changed
+  when: set_to_default is changed

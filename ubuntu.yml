@@ -5,7 +5,6 @@
   roles:
     - init
     - hw
-    - gtags
     - fish
     - fisherman
     - fisherman-plugin

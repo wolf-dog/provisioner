@@ -17,7 +17,7 @@
     command: /usr/local/bin/fish -c './install --all'
     args:
       chdir: "/home/{{ user.name }}/.fzf"
-  when: installed|changed
+  when: installed is changed
 
 - name: create a symlink
   file:

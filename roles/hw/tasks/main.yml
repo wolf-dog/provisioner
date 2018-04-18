@@ -21,7 +21,7 @@
     command: ./tools/build.sh
     args:
       chdir: "/home/{{ user.name }}/devel/highway"
-  when: installed|changed
+  when: installed is changed
 
 - name: create a symlink
   file:

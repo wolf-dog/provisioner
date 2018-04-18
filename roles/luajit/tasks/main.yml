@@ -23,7 +23,7 @@
     become: yes
     args:
       chdir: "/home/{{ user.name }}/devel/LuaJIT-{{ luajit.version }}"
-  when: installed|changed
+  when: installed is changed
 
 - name: set LD_LIBRARY_PATH
   lineinfile:

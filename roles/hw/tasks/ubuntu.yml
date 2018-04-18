@@ -5,3 +5,5 @@
     name: "{{ item }}"
   with_items:
     - automake
+    - gcc
+    - make
