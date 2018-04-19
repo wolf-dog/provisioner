@@ -1,0 +1,35 @@
+---
+- name: check whether gtags is installed
+  command: which gtags
+  register: installed
+  check_mode: no
+  failed_when: no
+  changed_when: installed.rc != 0
+
+- name: install packages for ubuntu
+  import_tasks: ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- block:
+  - name: get and unarchive source codes
+    unarchive:
+      src: "http://tamacom.com/global/global-{{ global.version }}.tar.gz"
+      dest: "/home/{{ user.name }}/devel/"
+      remote_src: yes
+
+  - name: configure
+    command: ./configure
+    args:
+      chdir: "/home/{{ user.name }}/devel/global-{{ global.version }}"
+
+  - name: make
+    command: make
+    args:
+      chdir: "/home/{{ user.name }}/devel/global-{{ global.version }}"
+
+  - name: make install
+    command: make install
+    become: yes
+    args:
+      chdir: "/home/{{ user.name }}/devel/global-{{ global.version }}"
+  when: installed|changed

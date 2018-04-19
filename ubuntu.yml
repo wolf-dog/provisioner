@@ -4,6 +4,7 @@
     ubuntu
   roles:
     - init
+    - global
     - hw
     - fish
     - fisherman
